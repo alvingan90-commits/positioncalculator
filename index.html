@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>宇恒 3-2-5 分仓仓位计算器</title>
+  <title>翻身有道 | 宇恒分仓模式合约计算器</title>
   <style>
     :root {
       color-scheme: light;
@@ -551,13 +551,52 @@
     .formula { background: #f8f3ea; border-color: #e3d7c2; }
     .formula code { color: #35455e; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; }
 
+  
+    /* FSYD terminal-inspired layout */
+    :root { --bg:#efede6; --panel:#fbfaf6; --ink:#171a18; --muted:#68706b; --line:#d9d6cc; --accent:#277e66; --accent-strong:#18614f; --navy:#171a18; --gold:#bd8730; --gold-soft:#f4ead7; --shadow:0 12px 28px rgba(23,26,24,.06); }
+    body { background:var(--bg); font-family:"Noto Serif SC","Songti SC","STSong","Noto Sans SC","PingFang SC",serif; color:var(--ink); font-size:15px; letter-spacing:0; }
+    .page { width:min(1440px,calc(100% - 60px)); padding:20px 0 52px; }
+    .topbar { padding:0 0 22px; margin:0 0 18px; border-radius:0; border-bottom:1px solid var(--line); background:transparent; box-shadow:none; color:var(--ink); overflow:visible; }
+    .topbar::after { display:none; } .topbar > * { position:static; }
+    .brand-line { margin-bottom:6px; color:var(--accent-strong); font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:11px; font-weight:800; letter-spacing:.15em; }
+    h1 { color:var(--ink); font-size:clamp(28px,3.2vw,43px); font-family:"Noto Serif SC","Songti SC","STSong",serif; font-weight:500; letter-spacing:.02em; margin:0 0 7px; }
+    .subtitle { color:var(--muted); font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:14px; max-width:850px; }
+    .formula-badge { min-width:120px; border:1px solid var(--line); background:var(--panel); padding:10px 12px; border-radius:99px; box-shadow:none; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:12px; }
+    .formula-badge strong { display:inline; font-size:13px; margin:0; color:var(--ink); } .formula-badge strong::before { content:"●"; color:#3caa79; padding-right:5px; }
+    .journey { grid-template-columns:1.6fr repeat(3,1fr); gap:0; margin:0 0 18px; border-left:3px solid var(--gold); box-shadow:none; }
+    .journey-main,.journey-step { min-height:96px; border:0; border-radius:0; border-right:1px solid var(--line); border-bottom:1px solid var(--line); border-top:1px solid var(--line); padding:15px 18px; box-shadow:none; background:rgba(255,255,255,.54); }
+    .journey-main { background:#f8f5ed; border-left:1px solid var(--line); }
+    .journey h2 { font-size:20px; font-weight:500; } .journey h3 { font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:14px; font-weight:800; } .journey p { font-size:12px; }
+    .journey-number { width:auto; height:auto; border-radius:0; color:var(--gold); background:transparent; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:11px; font-weight:900; box-shadow:none; }
+    .journey-number::before { content:"0"; } .journey-button { margin-top:6px; padding:0; background:none; color:var(--accent-strong); box-shadow:none; text-decoration:underline; font-size:12px; }
+    .layout { grid-template-columns:minmax(450px,1.05fr) minmax(500px,.95fr); gap:16px; align-items:start; }
+    section,.summary-card,.result-card,.discipline { background:var(--panel); border:1px solid var(--line); border-radius:7px; box-shadow:var(--shadow); }
+    .controls { padding:25px; position:sticky; top:14px; border-top:1px solid var(--line); }
+    .results { gap:12px; } .result-card,.discipline,.beginner-guide,.example { padding:25px; border-top:1px solid var(--line); }
+    .section-title { font-family:"Noto Serif SC","Songti SC",serif; font-size:25px; font-weight:500; color:var(--ink); padding-bottom:13px; margin-bottom:16px; border-bottom:1px solid var(--line); }
+    .pill { min-height:auto; padding:4px 8px; border-radius:4px; color:var(--accent-strong); background:#e7f1ec; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:11px; }
+    label { font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:12px; color:#4c5852; } input,select { min-height:49px; border-radius:4px; border-color:#d7d4cb; background:#fffefa; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:15px; font-weight:700; }
+    input:focus,select:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(39,126,102,.12); }
+    .stage-row { grid-template-columns:58px 1fr 1fr; border-radius:4px; padding:12px; background:#fffefa; } .stage-name { font-size:14px; font-family:"Noto Sans SC","PingFang SC",sans-serif; }
+    .btn { min-height:44px; border-radius:4px; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:14px; box-shadow:none; } .btn-primary { background:var(--navy); } .btn-secondary { background:#e8e5dc; color:var(--ink); }
+    .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; border:0; border-radius:7px; background:#30332f; }
+    .metric { min-height:116px; padding:18px; background:var(--navy); border-top:0!important; } .metric span { color:#c6cbc4; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:12px; } .metric strong { color:#f4d99f; font-family:"Noto Serif SC","Songti SC",serif; font-size:29px; font-weight:500; }
+    .notice { border-radius:4px; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:13px; } .notice.good,.example-callout { background:#edf4ef; color:#29634e; border-color:#cee0d5; } .notice.warn,.guide-note { background:#fff4df; color:#855a1d; border-color:#edd39f; } .notice.danger { background:#f8e9e7; color:#913f39; border-color:#e4b7b2; }
+    .cards { gap:9px; } .stage-card { padding:15px; border-radius:4px; border-top:1px solid var(--line)!important; background:#fffefa; } .stage-card:nth-child(1){border-left:3px solid var(--accent)!important}.stage-card:nth-child(2){border-left:3px solid var(--gold)!important}.stage-card:nth-child(3){border-left:3px solid var(--navy)!important}
+    .stage-card h3 { font-family:"Noto Serif SC","Songti SC",serif; font-size:18px; font-weight:500; }.data-line { font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:12px; }
+    .discipline-grid,.guide-grid { gap:8px; }.rule,.guide-step { border-radius:4px; padding:13px; background:#fffefa; }.rule strong,.guide-step h3 { font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:13px; }
+    .guide-shot { border-radius:3px; }.example-table { border-radius:4px; font-family:"Noto Sans SC","PingFang SC",sans-serif; font-size:12px; }.example-table th { background:#ebe9e1; color:#4d554f; }
+    @media(max-width:980px){.page{width:min(100% - 28px,1440px)}.layout{grid-template-columns:1fr}.controls{position:static}.journey{grid-template-columns:1fr 1fr}.journey-main{grid-column:1 / -1}}
+    @media(max-width:640px){.page{width:min(100% - 20px,1440px)}.topbar{display:grid;gap:12px}.formula-badge{width:max-content}.journey{grid-template-columns:1fr}.journey-main{grid-column:auto}.journey-main,.journey-step{border-left:1px solid var(--line);border-bottom:0}.journey-step:last-child{border-bottom:1px solid var(--line)}.controls,.result-card,.discipline,.beginner-guide,.example{padding:17px}.section-title{font-size:21px}.summary-grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}}
+
   </style>
 </head>
 <body>
   <main class="page">
     <div class="topbar">
       <div>
-        <h1>宇恒 3-2-5 分仓仓位计算器</h1>
+        <div class="brand-line">FSYD · YUHENG RISK SYSTEM</div>
+        <h1>翻身有道 | 宇恒分仓模式合约计算器</h1>
         <p class="subtitle">先定整笔交易最大亏损，再按结构止损距离反推每一仓名义仓位和实际保证金。3-2-5 是保证金占用上限和执行纪律，不是必须凑满的目标。</p>
       </div>
       <div class="formula-badge">
@@ -582,7 +621,7 @@
     <div class="layout">
       <section class="controls" aria-labelledby="input-title">
         <h2 class="section-title" id="input-title">
-          交易参数
+          01 · 基础设定
           <span class="pill">自动计算</span>
         </h2>
 
@@ -698,8 +737,8 @@
 
         <section class="result-card" aria-labelledby="result-title">
           <h2 class="section-title" id="result-title">
-            三仓结果
-            <span class="pill">30 / 20 / 50 可调整</span>
+            03 · 执行计划
+            <span class="pill">三仓结果</span>
           </h2>
           <div class="cards" id="stageCards"></div>
         </section>
@@ -728,7 +767,7 @@
 
 
         <section class="discipline beginner-guide" aria-labelledby="guide-title">
-          <h2 class="section-title" id="guide-title">新手：照着交易所页面下单</h2>
+          <h2 class="section-title" id="guide-title">04 · 交易所下单指引</h2>
           <p class="guide-intro">以下以你提供的合约页面为例。先在本页算出每一仓，再到交易所逐仓填写；不要一次把三仓全开。</p>
           <div class="guide-grid">
             <article class="guide-step">
@@ -755,7 +794,7 @@
       </div>
     </div>
         <section class="discipline example" aria-labelledby="example-title">
-          <h2 class="section-title" id="example-title">完整示例：10,000 USDT 的 BTC 三仓计划</h2>
+          <h2 class="section-title" id="example-title">05 · 10,000 USDT BTC 三仓示例</h2>
           <p class="example-lead">这是示范计算，不是交易建议。假设：账户净值 10,000 USDT、A级 Setup 风险 8%、杠杆 10×，交易所单位选择 <strong>By Position Size - USDT</strong>。</p>
           <div class="formula">
             <code>整笔最大亏损 = 10,000 × 8% = 800 USDT</code>
