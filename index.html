@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>宇恒 3-2-5 分仓仓位计算器</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --ink: #1c2522;
+      --muted: #61706a;
+      --line: #dce3dd;
+      --field: #f9fbf8;
+      --accent: #0f766e;
+      --accent-strong: #115e59;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --warn: #a15c07;
+      --warn-bg: #fff7e6;
+      --good: #17663a;
+      --good-bg: #edf8f0;
+      --shadow: 0 20px 55px rgba(28, 37, 34, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+      line-height: 1.5;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 34px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .formula-badge {
+      min-width: 190px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .formula-badge strong {
+      display: block;
+      color: var(--ink);
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    section,
+    .summary-card,
+    .result-card,
+    .discipline {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .controls {
+      padding: 18px;
+      position: sticky;
+      top: 14px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #e7f4f2;
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--field);
+      color: var(--ink);
+      padding: 9px 10px;
+      outline: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+      background: #ffffff;
+    }
+
+    .stage-inputs {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .stage-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 1fr;
+      gap: 8px;
+      align-items: end;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+    }
+
+    .stage-name {
+      align-self: center;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .btn-primary {
+      flex: 1;
+      color: #ffffff;
+      background: var(--accent);
+    }
+
+    .btn-secondary {
+      color: var(--accent-strong);
+      background: #e7f4f2;
+    }
+
+    .results {
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--line);
+    }
+
+    .metric {
+      min-height: 98px;
+      padding: 14px;
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .metric strong {
+      font-size: clamp(19px, 2.4vw, 28px);
+      line-height: 1.1;
+      word-break: break-word;
+    }
+
+    .result-card {
+      padding: 16px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stage-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfcfb;
+      display: grid;
+      gap: 12px;
+    }
+
+    .stage-card h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .stage-card .cap {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .data-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .data-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .data-line strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .status {
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .status.good {
+      color: var(--good);
+      background: var(--good-bg);
+    }
+
+    .status.warn {
+      color: var(--warn);
+      background: var(--warn-bg);
+    }
+
+    .status.danger {
+      color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    .notice-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .notice {
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .notice.good {
+      color: var(--good);
+      background: var(--good-bg);
+      border: 1px solid #bfe6ca;
+    }
+
+    .notice.warn {
+      color: var(--warn);
+      background: var(--warn-bg);
+      border: 1px solid #ffd991;
+    }
+
+    .notice.danger {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border: 1px solid #ffc8c2;
+    }
+
+    .discipline {
+      padding: 16px;
+    }
+
+    .discipline-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .rule {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfb;
+    }
+
+    .rule strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .rule span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .formula {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .formula code {
+      display: block;
+      color: var(--ink);
+      font-family: Consolas, "SFMono-Regular", monospace;
+      margin-top: 4px;
+      white-space: normal;
+    }
+
+    @media (max-width: 980px) {
+      .layout,
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        display: grid;
+      }
+
+      .controls {
+        position: static;
+      }
+
+      .summary-grid,
+      .cards,
+      .discipline-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 22px, 1180px);
+        padding-top: 18px;
+      }
+
+      .field-row,
+      .stage-row,
+      .summary-grid,
+      .cards,
+      .discipline-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stage-row {
+        align-items: stretch;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <div>
+        <h1>宇恒 3-2-5 分仓仓位计算器</h1>
+        <p class="subtitle">先定整笔交易最大亏损，再按结构止损距离反推每一仓名义仓位和实际保证金。3-2-5 是保证金占用上限和执行纪律，不是必须凑满的目标。</p>
+      </div>
+      <div class="formula-badge">
+        <strong>风险先行</strong>
+        净值 × 风险比例 → 风险预算 → 名义仓位 → 保证金
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="controls" aria-labelledby="input-title">
+        <h2 class="section-title" id="input-title">
+          交易参数
+          <span class="pill">自动计算</span>
+        </h2>
+
+        <div class="field-grid">
+          <div class="field-row">
+            <div class="field">
+              <label for="equity">账户净值 USDT</label>
+              <input id="equity" type="number" min="0" step="100" value="10000" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label for="leverage">杠杆倍数</label>
+              <input id="leverage" type="number" min="1" step="1" value="10" inputmode="decimal">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="riskPreset">风险类型</label>
+              <select id="riskPreset">
+                <option value="0.5">社群标准单 0.5%</option>
+                <option value="0.75" selected>A级 Setup 0.75%</option>
+                <option value="1">绝对上限 1%</option>
+                <option value="custom">自定义</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="customRisk">自定义风险比例 %</label>
+              <input id="customRisk" type="number" min="0" max="5" step="0.05" value="0.75" inputmode="decimal">
+            </div>
+          </div>
+
+          <div class="stage-inputs" aria-label="三仓止损距离和风险权重">
+            <div class="stage-row">
+              <div class="stage-name">第一仓</div>
+              <div class="field">
+                <label for="sl1">止损距离 %</label>
+                <input id="sl1" type="number" min="0" step="0.1" value="3" inputmode="decimal">
+              </div>
+              <div class="field">
+                <label for="w1">风险权重 %</label>
+                <input id="w1" type="number" min="0" step="1" value="30" inputmode="decimal">
+              </div>
+            </div>
+
+            <div class="stage-row">
+              <div class="stage-name">第二仓</div>
+              <div class="field">
+                <label for="sl2">止损距离 %</label>
+                <input id="sl2" type="number" min="0" step="0.1" value="2" inputmode="decimal">
+              </div>
+              <div class="field">
+                <label for="w2">风险权重 %</label>
+                <input id="w2" type="number" min="0" step="1" value="20" inputmode="decimal">
+              </div>
+            </div>
+
+            <div class="stage-row">
+              <div class="stage-name">第三仓</div>
+              <div class="field">
+                <label for="sl3">止损距离 %</label>
+                <input id="sl3" type="number" min="0" step="0.1" value="1.5" inputmode="decimal">
+              </div>
+              <div class="field">
+                <label for="w3">风险权重 %</label>
+                <input id="w3" type="number" min="0" step="1" value="50" inputmode="decimal">
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="recalculate" type="button">重新计算</button>
+            <button class="btn btn-secondary" id="resetDefaults" type="button">恢复默认</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="results">
+        <div class="summary-grid" aria-label="整单汇总">
+          <div class="metric">
+            <span>整单最大亏损</span>
+            <strong id="maxLoss">-</strong>
+          </div>
+          <div class="metric">
+            <span>总名义仓位</span>
+            <strong id="totalNotional">-</strong>
+          </div>
+          <div class="metric">
+            <span>总实际保证金</span>
+            <strong id="totalMargin">-</strong>
+          </div>
+          <div class="metric">
+            <span>保证金占账户</span>
+            <strong id="marginPct">-</strong>
+          </div>
+        </div>
+
+        <div class="notice-stack" id="notices" aria-live="polite"></div>
+
+        <section class="result-card" aria-labelledby="result-title">
+          <h2 class="section-title" id="result-title">
+            三仓结果
+            <span class="pill">30 / 20 / 50 可调整</span>
+          </h2>
+          <div class="cards" id="stageCards"></div>
+        </section>
+
+        <section class="discipline" aria-labelledby="discipline-title">
+          <h2 class="section-title" id="discipline-title">交易纪律</h2>
+          <div class="discipline-grid">
+            <div class="rule">
+              <strong>第二仓</strong>
+              <span>不能因为亏损自动补仓，只能在预设位置、原结构仍有效，并出现反转信号时考虑。</span>
+            </div>
+            <div class="rule">
+              <strong>第三仓</strong>
+              <span>必须等待收线实体突破和回踩确认；直接飞走就放弃，绝不追价，最多 5% 不是必须开满。</span>
+            </div>
+            <div class="rule">
+              <strong>失效处理</strong>
+              <span>结构失效立即全平，没有第四仓，不移动止损救单，浮盈不能直接当风险缓冲。</span>
+            </div>
+            <div class="rule">
+              <strong>保证金与爆仓</strong>
+              <span>统一使用逐仓；爆仓价必须远在结构止损之外，绝不能把爆仓当止损。</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="discipline" aria-labelledby="formula-title">
+          <h2 class="section-title" id="formula-title">核心公式</h2>
+          <div class="formula">
+            <code>最大亏损金额 = 账户净值 × 风险比例</code>
+            <code>该仓风险金额 = 最大亏损金额 × 该仓风险权重 ÷ 权重总和</code>
+            <code>名义仓位 = 该仓风险金额 ÷ 止损距离百分比</code>
+            <code>实际保证金 = 名义仓位 ÷ 杠杆</code>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const stageMeta = [
+      { name: "第一仓：试错仓", capPct: 3, note: "小仓验证判断，先定止损再反推仓位。" },
+      { name: "第二仓：防守仓", capPct: 2, note: "必须是预设位置加结构仍有效，不是亏损补仓。" },
+      { name: "第三仓：确认仓", capPct: 5, note: "收线突破加回踩确认；直接飞走就放弃。" }
+    ];
+
+    const defaults = {
+      equity: 10000,
+      leverage: 10,
+      riskPreset: "0.75",
+      customRisk: 0.75,
+      sl1: 3,
+      sl2: 2,
+      sl3: 1.5,
+      w1: 30,
+      w2: 20,
+      w3: 50
+    };
+
+    const ids = [
+      "equity", "leverage", "riskPreset", "customRisk",
+      "sl1", "sl2", "sl3", "w1", "w2", "w3"
+    ];
+
+    const els = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
+    const stageCards = document.getElementById("stageCards");
+    const notices = document.getElementById("notices");
+
+    function num(id) {
+      const value = Number(els[id].value);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function money(value) {
+      if (!Number.isFinite(value)) return "-";
+      return value.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + " USDT";
+    }
+
+    function pct(value) {
+      if (!Number.isFinite(value)) return "-";
+      return value.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + "%";
+    }
+
+    function addNotice(type, text) {
+      const div = document.createElement("div");
+      div.className = "notice " + type;
+      div.textContent = text;
+      notices.appendChild(div);
+    }
+
+    function getRiskPct() {
+      return els.riskPreset.value === "custom" ? num("customRisk") : Number(els.riskPreset.value);
+    }
+
+    function validate(values) {
+      const errors = [];
+      if (values.equity <= 0) errors.push("账户净值必须大于 0。");
+      if (values.leverage <= 0) errors.push("杠杆必须大于 0。");
+      if (values.riskPct <= 0) errors.push("风险比例必须大于 0。");
+      if (values.riskPct > 1) errors.push("风险比例已高于绝对上限 1%，请确认这不是常规计划。");
+      values.stopDistances.forEach((distance, index) => {
+        if (distance <= 0) errors.push(stageMeta[index].name + " 的止损距离必须大于 0%。");
+      });
+      if (values.weightTotal <= 0) errors.push("三仓风险权重总和必须大于 0。");
+      return errors;
+    }
+
+    function calculate() {
+      const values = {
+        equity: num("equity"),
+        leverage: num("leverage"),
+        riskPct: getRiskPct(),
+        stopDistances: [num("sl1"), num("sl2"), num("sl3")],
+        weights: [num("w1"), num("w2"), num("w3")]
+      };
+      values.weightTotal = values.weights.reduce((sum, value) => sum + Math.max(0, value), 0);
+
+      notices.innerHTML = "";
+      stageCards.innerHTML = "";
+
+      const validationMessages = validate(values);
+      if (validationMessages.length) {
+        document.getElementById("maxLoss").textContent = "-";
+        document.getElementById("totalNotional").textContent = "-";
+        document.getElementById("totalMargin").textContent = "-";
+        document.getElementById("marginPct").textContent = "-";
+        validationMessages.forEach((message) => addNotice(message.includes("高于绝对上限") ? "warn" : "danger", message));
+        if (validationMessages.some((message) => !message.includes("高于绝对上限"))) return;
+      }
+
+      const maxLoss = values.equity * values.riskPct / 100;
+      const rows = stageMeta.map((meta, index) => {
+        const normalizedWeight = Math.max(0, values.weights[index]) / values.weightTotal;
+        const riskBudget = maxLoss * normalizedWeight;
+        const stopRatio = values.stopDistances[index] / 100;
+        const notional = riskBudget / stopRatio;
+        const margin = notional / values.leverage;
+        const marginPctOfEquity = margin / values.equity * 100;
+        const capAmount = values.equity * meta.capPct / 100;
+        return {
+          ...meta,
+          weightPct: normalizedWeight * 100,
+          riskBudget,
+          stopDistance: values.stopDistances[index],
+          notional,
+          margin,
+          marginPctOfEquity,
+          capAmount,
+          capExceeded: margin > capAmount + 0.000001
+        };
+      });
+
+      const totalNotional = rows.reduce((sum, row) => sum + row.notional, 0);
+      const totalMargin = rows.reduce((sum, row) => sum + row.margin, 0);
+      const totalMarginPct = totalMargin / values.equity * 100;
+
+      document.getElementById("maxLoss").textContent = money(maxLoss);
+      document.getElementById("totalNotional").textContent = money(totalNotional);
+      document.getElementById("totalMargin").textContent = money(totalMargin);
+      document.getElementById("marginPct").textContent = pct(totalMarginPct);
+
+      if (Math.abs(values.weightTotal - 100) > 0.000001) {
+        addNotice("warn", "风险权重总和当前为 " + pct(values.weightTotal) + "，系统已按比例归一化分配风险。");
+      }
+
+      if (totalMarginPct > 10) {
+        addNotice("danger", "反推出的总保证金占账户 " + pct(totalMarginPct) + "，已高于 10% 总纪律上限。只能缩小仓位或放弃交易，不能移动止损、提高风险，或为了凑单强行开仓。");
+      } else {
+        addNotice("good", "总保证金占账户 " + pct(totalMarginPct) + "，未超过 10% 总纪律上限。实际需要多少就用多少，不为了凑满 10% 放大仓位。");
+      }
+
+      const exceededRows = rows.filter((row) => row.capExceeded);
+      if (exceededRows.length) {
+        addNotice("warn", exceededRows.map((row) => row.name.split("：")[0]).join("、") + " 的反推保证金超过各自 3-2-5 上限，请降低该仓名义仓位或放弃对应仓位。");
+      }
+
+      rows.forEach((row) => {
+        const statusClass = row.capExceeded ? "warn" : "good";
+        const statusText = row.capExceeded
+          ? "超过本仓 " + pct(row.capPct) + " 保证金上限"
+          : "未超过本仓 " + pct(row.capPct) + " 保证金上限";
+
+        const card = document.createElement("article");
+        card.className = "stage-card";
+        card.innerHTML = `
+          <div>
+            <h3>${row.name}</h3>
+            <div class="cap">保证金纪律上限：${pct(row.capPct)}，上限金额：${money(row.capAmount)}</div>
+          </div>
+          <dl class="data-list">
+            <div class="data-line"><dt>风险权重</dt><dd><strong>${pct(row.weightPct)}</strong></dd></div>
+            <div class="data-line"><dt>风险预算</dt><dd><strong>${money(row.riskBudget)}</strong></dd></div>
+            <div class="data-line"><dt>止损距离</dt><dd><strong>${pct(row.stopDistance)}</strong></dd></div>
+            <div class="data-line"><dt>名义仓位</dt><dd><strong>${money(row.notional)}</strong></dd></div>
+            <div class="data-line"><dt>实际保证金</dt><dd><strong>${money(row.margin)}</strong></dd></div>
+            <div class="data-line"><dt>占账户比例</dt><dd><strong>${pct(row.marginPctOfEquity)}</strong></dd></div>
+          </dl>
+          <div class="status ${statusClass}">${statusText}</div>
+          <div class="cap">${row.note}</div>
+        `;
+        stageCards.appendChild(card);
+      });
+    }
+
+    ids.forEach((id) => {
+      els[id].addEventListener("input", calculate);
+      els[id].addEventListener("change", calculate);
+    });
+
+    document.getElementById("recalculate").addEventListener("click", calculate);
+    document.getElementById("resetDefaults").addEventListener("click", () => {
+      Object.entries(defaults).forEach(([key, value]) => {
+        els[key].value = value;
+      });
+      calculate();
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
+
