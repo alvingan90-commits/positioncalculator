@@ -429,6 +429,43 @@
     .example-table tr:last-child td { border-bottom: 0; }
     .example-callout { margin-top: 12px; padding: 12px 14px; border-radius: 8px; background: var(--good-bg); color: var(--good); border: 1px solid #bfe6ca; font-size: 14px; font-weight: 700; }
 
+
+    /* Beginner-first visual refresh */
+    :root { --bg: #f3f7f6; --panel: #ffffff; --ink: #102b2a; --muted: #526c69; --line: #d7e3e0; --accent: #0c8278; --accent-strong: #075c55; --shadow: 0 18px 44px rgba(16, 68, 64, .10); }
+    body { font-size: 16px; line-height: 1.65; background: radial-gradient(circle at 8% 0%, #e0f4ee 0, transparent 27rem), #f3f7f6; }
+    .page { width: min(1240px, calc(100% - 32px)); padding: 34px 0 52px; }
+    .topbar { padding: 28px; border-radius: 20px; background: linear-gradient(135deg, #0c8278, #126f69); color: #fff; box-shadow: 0 22px 50px rgba(5, 92, 85, .20); margin-bottom: 20px; }
+    h1 { font-size: clamp(30px, 4vw, 48px); color: #fff; margin-bottom: 10px; }
+    .subtitle { font-size: 17px; line-height: 1.65; color: rgba(255,255,255,.87); }
+    .formula-badge { min-width: 220px; background: rgba(255,255,255,.96); border: 0; box-shadow: none; border-radius: 14px; font-size: 14px; color: var(--muted); }
+    .formula-badge strong { font-size: 20px; color: var(--accent-strong); }
+    .journey { display: grid; grid-template-columns: 1.3fr repeat(3, 1fr); gap: 12px; margin: 0 0 22px; }
+    .journey-main, .journey-step { border-radius: 16px; padding: 18px; border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); }
+    .journey-main { background: #fff7e6; border-color: #ffd991; }
+    .journey-kicker { display:block; color: var(--accent-strong); font-size: 13px; font-weight: 800; letter-spacing: .04em; }
+    .journey h2, .journey h3 { margin: 3px 0 6px; line-height: 1.3; }
+    .journey h2 { font-size: 21px; } .journey h3 { font-size: 16px; }
+    .journey p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .journey-number { display:inline-grid; place-items:center; width:28px; height:28px; border-radius:50%; margin-bottom:6px; color:#fff; background:var(--accent); font-weight:800; }
+    .journey-button { display:inline-block; margin-top:11px; padding:8px 13px; border-radius:9px; background:var(--accent); color:#fff; font-size:14px; font-weight:800; text-decoration:none; }
+    section, .summary-card, .result-card, .discipline { border-radius: 16px; box-shadow: var(--shadow); }
+    .controls, .result-card, .discipline, .beginner-guide, .example { padding: 22px; }
+    .section-title { font-size: 22px; margin-bottom: 16px; }
+    .pill { min-height: 30px; padding: 5px 11px; font-size: 13px; }
+    label { font-size: 14px; } input, select { min-height: 50px; font-size: 16px; padding: 11px 12px; }
+    .stage-row { grid-template-columns: 88px 1fr 1fr; padding: 13px; }
+    .stage-name { font-size: 16px; }
+    .btn { min-height: 50px; font-size: 16px; border-radius: 11px; }
+    .metric { min-height: 120px; padding: 17px; } .metric span { font-size: 14px; } .metric strong { font-size: clamp(22px, 2.5vw, 31px); }
+    .notice { font-size: 15px; padding: 14px 16px; }
+    .stage-card { border-radius: 13px; padding: 17px; } .stage-card h3 { font-size: 18px; } .data-line { font-size: 14px; padding-top: 9px; }
+    .discipline-grid { gap: 12px; } .rule { border-radius: 12px; padding: 15px; } .rule strong { font-size: 16px; } .rule span, .guide-step p, .example-lead { font-size: 15px; }
+    .guide-step { border-radius: 13px; padding: 17px; } .guide-step h3 { font-size: 17px; } .guide-intro { font-size: 16px; }
+    .guide-note, .example-callout { font-size: 15px; padding: 15px 16px; } .example-table { font-size: 15px; } .example-table th, .example-table td { padding: 12px; }
+    #input-title, #result-title, #guide-title { scroll-margin-top: 18px; }
+    @media (max-width: 980px) { .journey { grid-template-columns: 1fr 1fr; } .journey-main { grid-column: 1 / -1; } }
+    @media (max-width: 640px) { body { font-size: 16px; } .page { width: min(100% - 20px, 1240px); padding-top: 16px; } .topbar { padding: 21px; } .journey { grid-template-columns: 1fr; } .journey-main { grid-column:auto; } .controls, .result-card, .discipline, .beginner-guide, .example { padding: 17px; } .section-title { font-size: 20px; } .summary-grid { grid-template-columns: 1fr 1fr; } }
+
     @media (max-width: 980px) {
       .layout,
       .topbar {
@@ -486,6 +523,19 @@
         净值 × 风险比例 → 风险预算 → 名义仓位 → 保证金
       </div>
     </div>
+
+
+    <nav class="journey" aria-label="新手操作流程">
+      <div class="journey-main">
+        <span class="journey-kicker">第一次使用？</span>
+        <h2>先算清楚，再到交易所下单</h2>
+        <p>不需要自己心算保证金。按下面 3 步完成；页面会直接告诉你 Quantity 应填什么。</p>
+        <a class="journey-button" href="#input-title">从第 1 步开始计算</a>
+      </div>
+      <div class="journey-step"><span class="journey-number">1</span><h3>填写交易参数</h3><p>填账户净值、杠杆、风险类型和每仓止损距离。</p></div>
+      <div class="journey-step"><span class="journey-number">2</span><h3>查看每仓结果</h3><p>页面自动算出最大亏损、名义仓位和实际保证金。</p></div>
+      <div class="journey-step"><span class="journey-number">3</span><h3>照图到交易所填写</h3><p>选择下单单位后，直接复制每仓 Quantity 数字。</p></div>
+    </nav>
 
     <div class="layout">
       <section class="controls" aria-labelledby="input-title">
