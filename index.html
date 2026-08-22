@@ -509,6 +509,48 @@
         flex-direction: column;
       }
     }
+  
+    /* Premium navy, champagne, and emerald finish */
+    :root {
+      --bg: #f4f0e8; --panel: #fffdf9; --ink: #162235; --muted: #617084; --line: #ded8cd;
+      --accent: #176b5b; --accent-strong: #0d5148; --gold: #c69c52; --gold-soft: #f4ead6;
+      --navy: #111d2c; --rose: #a95050; --blue: #42668f; --shadow: 0 16px 42px rgba(17,29,44,.10);
+    }
+    body { font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: var(--ink); background: radial-gradient(circle at 96% 0%, #e6d6b6 0, transparent 25rem), radial-gradient(circle at 0 22%, #d8e6df 0, transparent 25rem), var(--bg); letter-spacing: .005em; }
+    h1, h2, h3, strong { letter-spacing: -.012em; }
+    .topbar { background: linear-gradient(125deg, #101b2a 0%, #173c50 58%, #185f55 100%); position: relative; overflow: hidden; }
+    .topbar::after { content: ""; position: absolute; width: 240px; height: 240px; border: 1px solid rgba(235,202,137,.30); border-radius: 50%; right: -88px; top: -116px; }
+    .topbar > * { position: relative; z-index: 1; }
+    .formula-badge { border-left: 4px solid var(--gold); background: #fffaf1; }
+    .formula-badge strong { color: #98723b; }
+    .journey-main { background: linear-gradient(135deg, #fff7e9, #f6ead2); border-color: #e2c694; }
+    .journey-step { background: rgba(255,253,249,.94); }
+    .journey-step:nth-child(2) { border-top: 4px solid var(--emerald, #176b5b); }
+    .journey-step:nth-child(3) { border-top: 4px solid var(--blue); }
+    .journey-step:nth-child(4) { border-top: 4px solid var(--gold); }
+    .journey-number { background: var(--navy); box-shadow: 0 4px 10px rgba(17,29,44,.16); }
+    .journey-button, .btn-primary { background: linear-gradient(135deg, #176b5b, #0d5148); box-shadow: 0 7px 14px rgba(23,107,91,.18); }
+    .btn-secondary { color: #98723b; background: var(--gold-soft); }
+    section, .summary-card, .result-card, .discipline { border-color: rgba(190,180,165,.72); background: rgba(255,253,249,.94); }
+    .controls { border-top: 5px solid var(--navy); }
+    .result-card { border-top: 5px solid var(--gold); }
+    .discipline { border-top: 4px solid var(--blue); }
+    .beginner-guide { border-top-color: var(--emerald, #176b5b); }
+    .example { border-top-color: var(--gold); }
+    .section-title { font-weight: 700; color: var(--navy); }
+    label, .metric span, .cap { font-weight: 600; }
+    input, select { border-color: #d8d0c2; background: #fffefa; }
+    input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(198,156,82,.18); }
+    .summary-grid { border-color: #d9d1c4; background: #d9d1c4; }
+    .metric:first-child { border-top: 3px solid var(--rose); } .metric:nth-child(2) { border-top: 3px solid var(--blue); } .metric:nth-child(3) { border-top: 3px solid var(--emerald, #176b5b); } .metric:nth-child(4) { border-top: 3px solid var(--gold); }
+    .stage-card:nth-child(1) { border-top: 4px solid var(--blue); } .stage-card:nth-child(2) { border-top: 4px solid var(--gold); } .stage-card:nth-child(3) { border-top: 4px solid var(--emerald, #176b5b); }
+    .rule { background: #fffefa; } .rule strong { color: var(--navy); }
+    .notice.good, .example-callout { background: #e8f3ed; border-color: #bdd8ca; color: #175e4e; }
+    .notice.warn, .guide-note { background: #fff4df; border-color: #eccf96; color: #8a5a15; }
+    .notice.danger { background: #fbe9e7; border-color: #e8bab5; color: #9c3f3b; }
+    .formula { background: #f8f3ea; border-color: #e3d7c2; }
+    .formula code { color: #35455e; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; }
+
   </style>
 </head>
 <body>
