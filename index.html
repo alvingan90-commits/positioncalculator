@@ -660,6 +660,9 @@
     .result-card .stage-card .status { text-align:left; }
     @media(max-width:640px){ .result-card .data-line { grid-template-columns:minmax(0,1fr) minmax(125px,auto); gap:12px; } .result-card .data-line dd { min-width:125px; } .result-card .data-line dd strong { white-space:normal; } }
 
+  
+    .result-card .stage-card > :first-child .cap { line-height:1.7; }
+
   </style>
 </head>
 <body>
@@ -1066,7 +1069,7 @@
         card.innerHTML = `
           <div>
             <h3>${row.name}</h3>
-            <div class="cap">保证金纪律上限：${pct(row.capPct)}，上限金额：${money(row.capAmount)}</div>
+            <div class="cap">保证金纪律上限：${pct(row.capPct)}<br>上限金额：${money(row.capAmount)}</div>
           </div>
           <dl class="data-list">
             <div class="data-line"><dt>风险权重</dt><dd><strong>${pct(row.weightPct)}</strong></dd></div>
