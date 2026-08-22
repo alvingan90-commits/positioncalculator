@@ -514,6 +514,21 @@
             </div>
           </div>
 
+          <div class="field-row">
+            <div class="field">
+              <label for="orderUnit">交易所下单单位</label>
+              <select id="orderUnit">
+                <option value="position" selected>By Position Size - USDT（按仓位价值）</option>
+                <option value="cost">By Cost - USDT（按保证金成本）</option>
+                <option value="quantity">By Qty - BTC（按币数量）</option>
+              </select>
+            </div>
+            <div class="field" id="referencePriceField" hidden>
+              <label for="referencePrice">参考下单价格 USDT / BTC</label>
+              <input id="referencePrice" type="number" min="0" step="0.01" value="" placeholder="例如 135.56" inputmode="decimal">
+            </div>
+          </div>
+
           <div class="stage-inputs" aria-label="三仓止损距离和风险权重">
             <div class="stage-row">
               <div class="stage-name">第一仓</div>
@@ -631,7 +646,7 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
             </article>
             <article class="guide-step">
               <h3><span class="step-number">3</span>填写哪一个数字？</h3>
-              <p>当数量栏右侧是 <strong>USDT</strong> 时，填写每一仓结果里的 <strong>名义仓位</strong>。<strong>不要填“实际保证金”</strong>：保证金会由交易所按杠杆自动计算。</p>
+              <p id="unitGuideText">当前选择 <strong>By Position Size - USDT</strong>：每一仓在交易所的 Quantity 栏填写本页的<strong>名义仓位</strong>。</p>
             </article>
             <article class="guide-step">
               <h3><span class="step-number">4</span>按顺序逐仓下单</h3>
@@ -666,6 +681,8 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
       leverage: 10,
       riskPreset: "0.75",
       customRisk: 0.75,
+      orderUnit: "position",
+      referencePrice: "",
       sl1: 3,
       sl2: 2,
       sl3: 1.5,
@@ -675,7 +692,7 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
     };
 
     const ids = [
-      "equity", "leverage", "riskPreset", "customRisk",
+      "equity", "leverage", "riskPreset", "customRisk", "orderUnit", "referencePrice",
       "sl1", "sl2", "sl3", "w1", "w2", "w3"
     ];
 
@@ -715,6 +732,26 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
       return els.riskPreset.value === "custom" ? num("customRisk") : Number(els.riskPreset.value);
     }
 
+    function orderUnitLabel(unit) {
+      return { position: "按仓位价值（USDT）", cost: "按保证金成本（USDT）", quantity: "按币数量（BTC）" }[unit];
+    }
+
+    function exchangeEntry(row, values) {
+      if (values.orderUnit === "cost") return { label: "Quantity 栏填写（USDT）", value: money(row.margin) };
+      if (values.orderUnit === "quantity") return { label: "Quantity 栏填写（BTC）", value: (row.notional / values.referencePrice).toLocaleString("en-US", { minimumFractionDigits: 6, maximumFractionDigits: 6 }) + " BTC" };
+      return { label: "Quantity 栏填写（USDT）", value: money(row.notional) };
+    }
+
+    function updateUnitGuide(values) {
+      const field = document.getElementById("referencePriceField");
+      field.hidden = values.orderUnit !== "quantity";
+      const guide = document.getElementById("unitGuideText");
+      if (!guide) return;
+      if (values.orderUnit === "cost") guide.innerHTML = "当前选择 <strong>By Cost - USDT</strong>：每一仓在交易所的 Quantity 栏填写本页的<strong>实际保证金</strong>。";
+      else if (values.orderUnit === "quantity") guide.innerHTML = "当前选择 <strong>By Qty - BTC</strong>：输入每仓预计成交的参考价格后，页面会给出应填写的 <strong>BTC 数量</strong>。";
+      else guide.innerHTML = "当前选择 <strong>By Position Size - USDT</strong>：每一仓在交易所的 Quantity 栏填写本页的<strong>名义仓位</strong>。";
+    }
+
     function validate(values) {
       const errors = [];
       if (values.equity <= 0) errors.push("账户净值必须大于 0。");
@@ -725,6 +762,7 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
         if (distance <= 0) errors.push(stageMeta[index].name + " 的止损距离必须大于 0%。");
       });
       if (values.weightTotal <= 0) errors.push("三仓风险权重总和必须大于 0。");
+      if (values.orderUnit === "quantity" && values.referencePrice <= 0) errors.push("选择按币数量时，必须填入大于 0 的参考下单价格。");
       return errors;
     }
 
@@ -733,6 +771,8 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
         equity: num("equity"),
         leverage: num("leverage"),
         riskPct: getRiskPct(),
+        orderUnit: els.orderUnit.value,
+        referencePrice: num("referencePrice"),
         stopDistances: [num("sl1"), num("sl2"), num("sl3")],
         weights: [num("w1"), num("w2"), num("w3")]
       };
@@ -740,6 +780,7 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
 
       notices.innerHTML = "";
       stageCards.innerHTML = "";
+      updateUnitGuide(values);
 
       const validationMessages = validate(values);
       if (validationMessages.length) {
@@ -816,6 +857,7 @@ iVBORw0KGgoAAAANSUhEUgAAAdIAAAGiCAIAAADcINCgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAgAElE
             <div class="data-line"><dt>止损距离</dt><dd><strong>${pct(row.stopDistance)}</strong></dd></div>
             <div class="data-line"><dt>名义仓位</dt><dd><strong>${money(row.notional)}</strong></dd></div>
             <div class="data-line"><dt>实际保证金</dt><dd><strong>${money(row.margin)}</strong></dd></div>
+            <div class="data-line"><dt>${exchangeEntry(row, values).label}</dt><dd><strong>${exchangeEntry(row, values).value}</strong></dd></div>
             <div class="data-line"><dt>占账户比例</dt><dd><strong>${pct(row.marginPctOfEquity)}</strong></dd></div>
           </dl>
           <div class="status ${statusClass}">${statusText}</div>
