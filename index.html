@@ -421,6 +421,14 @@
     .guide-shot { width: 100%; display: block; border-radius: 7px; border: 1px solid var(--line); }
     .guide-note { margin-top: 12px; padding: 12px 14px; border-radius: 8px; border: 1px solid #ffd991; background: var(--warn-bg); color: var(--warn); font-size: 14px; font-weight: 700; }
 
+    .example { padding: 16px; }
+    .example-lead { margin: -3px 0 12px; color: var(--muted); font-size: 14px; }
+    .example-table { width: 100%; border-collapse: collapse; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; }
+    .example-table th, .example-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--line); }
+    .example-table th { background: #e7f4f2; color: var(--accent-strong); font-weight: 800; }
+    .example-table tr:last-child td { border-bottom: 0; }
+    .example-callout { margin-top: 12px; padding: 12px 14px; border-radius: 8px; background: var(--good-bg); color: var(--good); border: 1px solid #bfe6ca; font-size: 14px; font-weight: 700; }
+
     @media (max-width: 980px) {
       .layout,
       .topbar {
@@ -664,6 +672,26 @@
         </section>
       </div>
     </div>
+        <section class="discipline example" aria-labelledby="example-title">
+          <h2 class="section-title" id="example-title">完整示例：10,000 USDT 的 BTC 三仓计划</h2>
+          <p class="example-lead">这是示范计算，不是交易建议。假设：账户净值 10,000 USDT、A级 Setup 风险 0.75%、杠杆 10×，交易所单位选择 <strong>By Position Size - USDT</strong>。</p>
+          <div class="formula">
+            <code>整笔最大亏损 = 10,000 × 0.75% = 75 USDT</code>
+            <code>第一 / 第二 / 第三仓风险预算 = 22.50 / 15.00 / 37.50 USDT</code>
+          </div>
+          <div style="overflow-x:auto; margin-top:12px">
+            <table class="example-table">
+              <thead><tr><th>开仓阶段</th><th>止损距离</th><th>风险预算</th><th>计算器的名义仓位</th><th>交易所 Quantity 填写</th><th>预计保证金（10×）</th></tr></thead>
+              <tbody>
+                <tr><td>第一仓：试错仓</td><td>3.00%</td><td>22.50 USDT</td><td>750.00 USDT</td><td><strong>750 USDT</strong></td><td>75.00 USDT</td></tr>
+                <tr><td>第二仓：防守仓</td><td>2.00%</td><td>15.00 USDT</td><td>750.00 USDT</td><td><strong>750 USDT</strong></td><td>75.00 USDT</td></tr>
+                <tr><td>第三仓：确认仓</td><td>1.50%</td><td>37.50 USDT</td><td>2,500.00 USDT</td><td><strong>2,500 USDT</strong></td><td>250.00 USDT</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="example-callout">下单顺序：先只开第一仓；第二仓仅在预设位置且结构仍有效时开；第三仓只在突破收线与回踩确认后开。三仓都满足时，总名义仓位为 4,000 USDT、总预计保证金为 400 USDT（账户的 4%），不需要为了凑满 10% 而加大仓位。</div>
+        </section>
+
   </main>
 
   <script>
