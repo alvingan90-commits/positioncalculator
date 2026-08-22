@@ -560,15 +560,15 @@
             <div class="field">
               <label for="riskPreset">风险类型</label>
               <select id="riskPreset">
-                <option value="0.5">社群标准单 0.5%</option>
-                <option value="0.75" selected>A级 Setup 0.75%</option>
-                <option value="1">绝对上限 1%</option>
+                <option value="5">社群标准单 5%</option>
+                <option value="8" selected>A级 Setup 8%</option>
+                <option value="10">绝对上限 10%</option>
                 <option value="custom">自定义</option>
               </select>
             </div>
             <div class="field">
               <label for="customRisk">自定义风险比例 %</label>
-              <input id="customRisk" type="number" min="0" max="5" step="0.05" value="0.75" inputmode="decimal">
+              <input id="customRisk" type="number" min="0" max="10" step="0.1" value="8" inputmode="decimal">
             </div>
           </div>
 
@@ -724,22 +724,22 @@
     </div>
         <section class="discipline example" aria-labelledby="example-title">
           <h2 class="section-title" id="example-title">完整示例：10,000 USDT 的 BTC 三仓计划</h2>
-          <p class="example-lead">这是示范计算，不是交易建议。假设：账户净值 10,000 USDT、A级 Setup 风险 0.75%、杠杆 10×，交易所单位选择 <strong>By Position Size - USDT</strong>。</p>
+          <p class="example-lead">这是示范计算，不是交易建议。假设：账户净值 10,000 USDT、A级 Setup 风险 8%、杠杆 10×，交易所单位选择 <strong>By Position Size - USDT</strong>。</p>
           <div class="formula">
-            <code>整笔最大亏损 = 10,000 × 0.75% = 75 USDT</code>
-            <code>第一 / 第二 / 第三仓风险预算 = 22.50 / 15.00 / 37.50 USDT</code>
+            <code>整笔最大亏损 = 10,000 × 8% = 800 USDT</code>
+            <code>第一 / 第二 / 第三仓风险预算 = 240 / 160 / 400 USDT</code>
           </div>
           <div style="overflow-x:auto; margin-top:12px">
             <table class="example-table">
               <thead><tr><th>开仓阶段</th><th>止损距离</th><th>风险预算</th><th>计算器的名义仓位</th><th>交易所 Quantity 填写</th><th>预计保证金（10×）</th></tr></thead>
               <tbody>
-                <tr><td>第一仓：试错仓</td><td>3.00%</td><td>22.50 USDT</td><td>750.00 USDT</td><td><strong>750 USDT</strong></td><td>75.00 USDT</td></tr>
-                <tr><td>第二仓：防守仓</td><td>2.00%</td><td>15.00 USDT</td><td>750.00 USDT</td><td><strong>750 USDT</strong></td><td>75.00 USDT</td></tr>
-                <tr><td>第三仓：确认仓</td><td>1.50%</td><td>37.50 USDT</td><td>2,500.00 USDT</td><td><strong>2,500 USDT</strong></td><td>250.00 USDT</td></tr>
+                <tr><td>第一仓：试错仓</td><td>3.00%</td><td>240.00 USDT</td><td>8,000.00 USDT</td><td><strong>8,000 USDT</strong></td><td>800.00 USDT</td></tr>
+                <tr><td>第二仓：防守仓</td><td>2.00%</td><td>160.00 USDT</td><td>8,000.00 USDT</td><td><strong>8,000 USDT</strong></td><td>800.00 USDT</td></tr>
+                <tr><td>第三仓：确认仓</td><td>1.50%</td><td>400.00 USDT</td><td>26,666.67 USDT</td><td><strong>26,666.67 USDT</strong></td><td>2,666.67 USDT</td></tr>
               </tbody>
             </table>
           </div>
-          <div class="example-callout">下单顺序：先只开第一仓；第二仓仅在预设位置且结构仍有效时开；第三仓只在突破收线与回踩确认后开。三仓都满足时，总名义仓位为 4,000 USDT、总预计保证金为 400 USDT（账户的 4%），不需要为了凑满 10% 而加大仓位。</div>
+          <div class="example-callout">下单顺序：先只开第一仓；第二仓仅在预设位置且结构仍有效时开；第三仓只在突破收线与回踩确认后开。三仓都满足时，总名义仓位约为 42,666.67 USDT、总预计保证金约为 4,266.67 USDT（账户的 42.67%）。这会显著高于页面原先的 10% 保证金纪律提示；必须根据自己的风险规则重新评估，不能因为示例而强行开满。</div>
         </section>
 
   </main>
@@ -754,8 +754,8 @@
     const defaults = {
       equity: 10000,
       leverage: 10,
-      riskPreset: "0.75",
-      customRisk: 0.75,
+      riskPreset: "8",
+      customRisk: 8,
       orderUnit: "position",
       referencePrice: "",
       sl1: 3,
@@ -832,7 +832,7 @@
       if (values.equity <= 0) errors.push("账户净值必须大于 0。");
       if (values.leverage <= 0) errors.push("杠杆必须大于 0。");
       if (values.riskPct <= 0) errors.push("风险比例必须大于 0。");
-      if (values.riskPct > 1) errors.push("风险比例已高于绝对上限 1%，请确认这不是常规计划。");
+      if (values.riskPct > 10) errors.push("风险比例已高于绝对上限 10%，请确认这不是常规计划。");
       values.stopDistances.forEach((distance, index) => {
         if (distance <= 0) errors.push(stageMeta[index].name + " 的止损距离必须大于 0%。");
       });
