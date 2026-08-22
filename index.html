@@ -640,6 +640,16 @@
       .data-line { font-size:16px; }
     }
 
+  
+    /* The execution panel is narrow even on desktop: always use readable stacked stages */
+    .result-card .cards { grid-template-columns:1fr; gap:12px; }
+    .result-card .stage-card { display:grid; grid-template-columns:minmax(175px,.78fr) minmax(0,1.22fr); align-items:start; column-gap:20px; }
+    .result-card .stage-card > :first-child { grid-column:1; grid-row:1 / span 3; }
+    .result-card .stage-card .data-list { grid-column:2; grid-row:1; }
+    .result-card .stage-card .status { grid-column:2; grid-row:2; }
+    .result-card .stage-card .cap:last-child { grid-column:2; grid-row:3; }
+    @media(max-width:640px){ .result-card .stage-card { grid-template-columns:1fr; } .result-card .stage-card > :first-child,.result-card .stage-card .data-list,.result-card .stage-card .status,.result-card .stage-card .cap:last-child { grid-column:1; grid-row:auto; } }
+
   </style>
 </head>
 <body>
