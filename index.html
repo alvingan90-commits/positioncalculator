@@ -623,6 +623,23 @@
     .result-card .section-title .pill { justify-self:end; white-space:nowrap; }
     @media(max-width:640px){ .result-card .section-title { grid-template-columns:1fr; row-gap:8px; align-items:start; } .result-card .section-title .pill { justify-self:start; } }
 
+  
+    /* Prevent dense three-column stage cards on narrower screens */
+    @media(max-width:1100px){
+      .cards { grid-template-columns:1fr; gap:12px; }
+      .stage-card { grid-template-columns:minmax(170px, .8fr) minmax(0, 1.2fr); align-items:start; column-gap:18px; }
+      .stage-card > :first-child { grid-column:1; grid-row:1 / span 3; }
+      .stage-card .data-list { grid-column:2; grid-row:1; }
+      .stage-card .status { grid-column:2; grid-row:2; }
+      .stage-card .cap:last-child { grid-column:2; grid-row:3; }
+      .data-line { font-size:17px; }
+    }
+    @media(max-width:640px){
+      .stage-card { display:grid; grid-template-columns:1fr; }
+      .stage-card > :first-child,.stage-card .data-list,.stage-card .status,.stage-card .cap:last-child { grid-column:1; grid-row:auto; }
+      .data-line { font-size:16px; }
+    }
+
   </style>
 </head>
 <body>
