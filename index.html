@@ -650,6 +650,16 @@
     .result-card .stage-card .cap:last-child { grid-column:2; grid-row:3; }
     @media(max-width:640px){ .result-card .stage-card { grid-template-columns:1fr; } .result-card .stage-card > :first-child,.result-card .stage-card .data-list,.result-card .stage-card .status,.result-card .stage-card .cap:last-child { grid-column:1; grid-row:auto; } }
 
+  
+    /* Ledger-style label/value alignment inside execution cards */
+    .result-card .data-list { gap:0; }
+    .result-card .data-line { display:grid; grid-template-columns:minmax(0,1fr) minmax(150px,auto); align-items:center; gap:16px; padding:11px 0; }
+    .result-card .data-line dt { min-width:0; line-height:1.45; }
+    .result-card .data-line dd { margin:0; min-width:150px; text-align:right; }
+    .result-card .data-line dd strong { display:block; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .result-card .stage-card .status { text-align:left; }
+    @media(max-width:640px){ .result-card .data-line { grid-template-columns:minmax(0,1fr) minmax(125px,auto); gap:12px; } .result-card .data-line dd { min-width:125px; } .result-card .data-line dd strong { white-space:normal; } }
+
   </style>
 </head>
 <body>
